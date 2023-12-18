@@ -1,0 +1,59 @@
+// ==UserScript==
+// @name         快速收藏
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  try to take over the world!
+// @author       You
+// @match        *://weibo.com/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=weibo.com
+// @grant        none
+// ==/UserScript==
+function hasClassInChildren(element, className) {
+  const children = element.getElementsByClassName(className);
+  return children.length > 0;
+}
+
+function _debounce(func) {
+  let timeoutId;
+
+  return function (...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      func.apply(this, args);
+    }, 300);
+  };
+}
+
+(function() {
+    'use strict';
+
+    var arr = document.getElementsByTagName('header');
+    document.addEventListener('scroll', _debounce(function () {
+        arr.forEach(node => {
+            var hasFavButton = hasClassInChildren(node, 'fav-button');
+
+            if (hasFavButton) {
+                return;
+            }
+            var ele = document.createElement('div');
+            ele.innerHTML = '收藏';
+            ele.setAttribute('class', 'fav-button')
+            ele.setAttribute('style','display: inline-block;margin-left: 10px;cursor: pointer');
+            ele.addEventListener('click',function(e){
+                var parentElement = e.target.parentNode;
+                console.log(parentElement);
+                parentElement.getElementsByClassName('woo-pop-ctrl')[0].querySelectorAll('[class*="morepop_action"]')[0].click()
+                var timer1 = setTimeout(function() {
+                    document.getElementsByClassName('woo-pop-wrap-main')[1].getElementsByClassName('woo-pop-item-main')[1].click()
+                });
+                var timer2 = setTimeout(function() {
+                    document.getElementsByClassName('wbpro-layer-tit-opt woo-box-flex woo-box-alignCenter woo-box-justifyCenter')[0].click()
+                    clearTimeout(timer1);
+                    clearTimeout(timer2);
+                },500)
+            })
+            var box = node.querySelectorAll('[class*="morepop_more"]')[0];
+            box && box.appendChild(ele)
+        })
+    }));
+})();
